@@ -1,7 +1,8 @@
 # from django.shortcuts import render
 from django.http import JsonResponse
-import json
+# import json
 from product.models import Product
+from django.forms.models import model_to_dict
 
 # Create your views here.
 def api_home(request , *args , **kwargs):
@@ -31,5 +32,5 @@ def api_home(request , *args , **kwargs):
         data['title'] = model_data.title
         data['content'] = model_data.content
         data['price'] = model_data.price
-
+        # 
     return JsonResponse(data)
