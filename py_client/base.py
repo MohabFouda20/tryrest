@@ -6,7 +6,7 @@ import requests
 endpoint = "http://localhost:8000/api/"
 
 
-respone = requests.get(endpoint, json={"query":"hello world"}) # Application Programming Interface (API) simple one 
+respone = requests.get(endpoint, json={"product_id": 123}) # Application Programming Interface (API) simple one 
 
 print (respone.json()) 
 

@@ -1,10 +1,14 @@
 # from django.shortcuts import render
-from django.http import JsonResponse
+# from django.http import JsonResponse  
 # import json
 from product.models import Product
 from django.forms.models import model_to_dict
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from product.serializers import ProductSerializers
 
 # Create your views here.
+@api_view(['GET'])
 def api_home(request , *args , **kwargs):
     # this is before the product app 
     
@@ -25,14 +29,18 @@ def api_home(request , *args , **kwargs):
     # data['content_type'] = request.content_type # get the content type of the request
     
     
-    model_data = Product.objects.all().order_by("?").first()
+    instance = Product.objects.all().order_by("?").first()
     data = {}
-    if model_data:
+    if instance:
         #  before using the model_to_dict
         # data['id'] = model_data.id
         # data['title'] = model_data.title
         # data['content'] = model_data.content
         # data['price'] = model_data.price
         # 
-        data = model_to_dict(model_data)
-    return JsonResponse(data)
+        data = model_to_dict(instance)
+        
+        data = ProductSerializers(instance).data
+        
+        
+    return Response(data)
