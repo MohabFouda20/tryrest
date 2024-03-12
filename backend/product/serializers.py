@@ -15,6 +15,9 @@ class ProductSerializers(serializers.ModelSerializer):
             'sale',
             'before'
         ]
-    def get_before(self , obj): # obj is the instance of the model and the method name should be get_fieldname
-        print (obj.id) # prin the id in the server console
-        return "hello world"
+    def get_before(self, obj):
+        if not hasattr(obj, 'id'):
+            return None
+        if not isinstance(obj, Product):
+            return None
+        return "Custom value based on obj"
