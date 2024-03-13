@@ -12,7 +12,7 @@ from product.serializers import ProductSerializers
 def api_home(request , *args , **kwargs):
   
     serializer = ProductSerializers(data = request.data)
-    if serializer.is_valid(raise_exception=True):
+    if serializer.is_valid(raise_exception=True ):
         instance  = serializer.save()
         print(instance)
         return Response(serializer.data)

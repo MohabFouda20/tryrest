@@ -4,7 +4,7 @@ from django.db import models
 class Product(models.Model):
     title = models.CharField(max_length=120)
     content = models.TextField( blank=True , null=True)
-    price = models.DecimalField(decimal_places=2 , max_digits=15)
+    price = models.DecimalField(decimal_places=2 , max_digits=15 , default=0.00)
     @property
     def sale(self):
         return self.price*10
