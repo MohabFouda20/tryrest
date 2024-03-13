@@ -9,6 +9,7 @@ class ProductSerializers(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
+            'id', # this is the primary key
             'title',
             'content',
             'price',
