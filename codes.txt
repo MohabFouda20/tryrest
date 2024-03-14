@@ -1,0 +1,16 @@
+some status code is need to know
+4xx :-
+    404 -> page not found 
+    403 -> user firbidden 
+    401 -> user unauthrized
+    400 -> bad request
+3xx :-
+
+    302 -> Found (Temporary Redirect)
+
+
+2xx :-
+
+    200 -> succesful 
+    201-> created
+    204-> succesful without return any thing 

@@ -1,4 +1,4 @@
-from rest_framework import generics , mixins , permissions
+from rest_framework import generics , mixins , permissions , authentication
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -8,10 +8,12 @@ from .serializers import ProductSerializers
 
 
 # class-based views
+#display all products and create a new product
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializers
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.DjangoModelPermissions]
     def perform_create(self , serializer):
         # serializer.save(user = self.request.user)
         title = serializer.validated_data.get("title")
@@ -22,7 +24,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
         print (serializer.validated_data)
 Product_List_create = ProductListCreateAPIView.as_view() # This is the same as the above class-based view, but it's a function-based view.
     
-    
+# detail view
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializers
@@ -30,6 +32,7 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 Product_detail = ProductDetailAPIView.as_view()
 
 
+# delete view
 
 class ProductDeleteAPIView(generics.DestroyAPIView):
     queryset = Product.objects.all()
@@ -40,6 +43,7 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
 Product_delete = ProductDeleteAPIView.as_view()
 
 
+# update view
 
 class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset = Product.objects.all()
