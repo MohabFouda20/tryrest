@@ -1,15 +1,17 @@
-from rest_framework import generics
-
+from rest_framework import generics , mixins , permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-
 from .models import Product
 from .serializers import ProductSerializers
 
+
+
+# class-based views
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializers
+    permission_classes = [permissions.IsAuthenticated]
     def perform_create(self , serializer):
         # serializer.save(user = self.request.user)
         title = serializer.validated_data.get("title")
@@ -35,7 +37,6 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
     lookup_field = 'pk'
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
-    
 Product_delete = ProductDeleteAPIView.as_view()
 
 
@@ -48,15 +49,31 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
         instance = serializer.save()
         if not instance.content:
             instance.content = instance.title
-            instance.save()
-            
+            instance.save()           
 Product_update = ProductUpdateAPIView.as_view() # This is the same as the above class-based view, but it's a function-based view.
 
 
 
+#  mixin views
+class ProductMixinView(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializers
+    lookup_field = 'pk'
+    def get(self , request , *args , **kwargs): # http -> get method
+        pk = kwargs.get("pk") # get the primary key from the url
+        if pk is not None: 
+            return self.retrieve(request , *args , **kwargs)
+        return self.list(request , *args , **kwargs)
+    def post(self , request , *args , **kwargs): # http -> post method
+        return self.create(request , *args , **kwargs)    
+product_mixin_view  = ProductMixinView.as_view() # make the class-based view a function-based view
 
 
-# make all the class-based views in one function-based view
+# function-based views
 @api_view(['GET', 'POST'])
 def product_alt_view(request ,pk = None ,  *args , **kwargs):
     method = request.method
