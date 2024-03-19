@@ -1,24 +1,25 @@
-from rest_framework import generics , mixins , permissions , authentication
+from rest_framework import generics , mixins  , authentication
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import Product
 from .serializers import ProductSerializers
-from .permissions import IsStaffEditorPermission
+# from ..api.permissions import IsStaffEditorPermission
 from api.authentication import TokenAuthentication
+from api.mixins import StaffEditorPermissionMixin
 
 
 
 # class-based views
 #display all products and create a new product
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(StaffEditorPermissionMixin,generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializers
-    authentication_classes = [
-        authentication.SessionAuthentication,
-        TokenAuthentication
-        ]
-    permission_classes = [permissions.IsAdminUser , IsStaffEditorPermission]
+    # authentication_classes = [
+    #     authentication.SessionAuthentication,
+    #     TokenAuthentication
+    #     ]
+    # permission_classes = [permissions.IsAdminUser , IsStaffEditorPermission]
     def perform_create(self , serializer):
         # serializer.save(user = self.request.user)
         title = serializer.validated_data.get("title")
@@ -30,7 +31,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 Product_List_create = ProductListCreateAPIView.as_view() # This is the same as the above class-based view, but it's a function-based view.
     
 # detail view
-class ProductDetailAPIView(generics.RetrieveAPIView):
+class ProductDetailAPIView(StaffEditorPermissionMixin,generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializers
     # lookup_field = 'id'
@@ -39,7 +40,7 @@ Product_detail = ProductDetailAPIView.as_view()
 
 # delete view
 
-class ProductDeleteAPIView(generics.DestroyAPIView):
+class ProductDeleteAPIView(StaffEditorPermissionMixin,generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializers
     lookup_field = 'pk'
@@ -50,7 +51,7 @@ Product_delete = ProductDeleteAPIView.as_view()
 
 # update view
 
-class ProductUpdateAPIView(generics.UpdateAPIView):
+class ProductUpdateAPIView(StaffEditorPermissionMixin,generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializers
     lookup_field = 'pk'
@@ -65,6 +66,7 @@ Product_update = ProductUpdateAPIView.as_view() # This is the same as the above 
 
 #  mixin views
 class ProductMixinView(
+    StaffEditorPermissionMixin,
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
