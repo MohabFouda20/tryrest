@@ -22,12 +22,14 @@ class ProductListCreateAPIView(StaffEditorPermissionMixin,generics.ListCreateAPI
     # permission_classes = [permissions.IsAdminUser , IsStaffEditorPermission]
     def perform_create(self , serializer):
         # serializer.save(user = self.request.user)
+        email = serializer.validated_data.pop("email")
+        print (email)
         title = serializer.validated_data.get("title")
         content = serializer.validated_data.get("content") or None
         if content is None:
             content = title
         serializer.save(content =content)
-        print (serializer.validated_data)
+        # print (serializer.validated_data)
 Product_List_create = ProductListCreateAPIView.as_view() # This is the same as the above class-based view, but it's a function-based view.
     
 # detail view

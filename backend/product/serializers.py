@@ -10,9 +10,11 @@ class ProductSerializers(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='product-detail',
         lookup_field='pk')
+    email = serializers.EmailField(write_only = True) #custom field
     class Meta:
         model = Product
         fields = [
+            'email', # this is a custom field
             'url_update',# this is the url of the product update view
             'url', # this is the url of the product detail view
             'pk', # this is the primary key
@@ -22,6 +24,16 @@ class ProductSerializers(serializers.ModelSerializer):
             'sale',
             'before'
         ]
+        
+        
+    def  create(self, validated_data): # this is a custom create method BECAUSE WE HAVE A CUSTOM FIELD "email"
+        # email = validated_data.pop('email')
+        obj = Product.objects.create(**validated_data)
+        # print (email , obj)
+        return obj
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
+    
     def get_url_update(self, obj):
         # return f"/api/product/{obj.pk}/"
         request = self.context.get("request")
