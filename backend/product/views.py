@@ -6,13 +6,13 @@ from .models import Product
 from .serializers import ProductSerializers
 # from ..api.permissions import IsStaffEditorPermission
 from api.authentication import TokenAuthentication
-from api.mixins import StaffEditorPermissionMixin
+from api.mixins import StaffEditorPermissionMixin , UserQuerySetMixin
 
 
 
 # class-based views
 #display all products and create a new product
-class ProductListCreateAPIView(StaffEditorPermissionMixin,generics.ListCreateAPIView):
+class ProductListCreateAPIView(StaffEditorPermissionMixin,UserQuerySetMixin,generics.ListCreateAPIView ):
     queryset = Product.objects.all()
     serializer_class = ProductSerializers
     # authentication_classes = [
@@ -22,14 +22,28 @@ class ProductListCreateAPIView(StaffEditorPermissionMixin,generics.ListCreateAPI
     # permission_classes = [permissions.IsAdminUser , IsStaffEditorPermission]
     def perform_create(self , serializer):
         # serializer.save(user = self.request.user)
-        email = serializer.validated_data.pop("email")
-        print (email)
+        # email = serializer.validated_data.pop("email")
+        # print (email)
         title = serializer.validated_data.get("title")
         content = serializer.validated_data.get("content") or None
         if content is None:
             content = title
-        serializer.save(content =content)
+        serializer.save(user = self.request.user , content =content)
         # print (serializer.validated_data)
+        
+        
+    # authentication of a user and return the queryset of the user    
+    # def query_set(self , *args , **kwargs):
+    #     qs = super().query_set( *args , **kwargs)
+    #     request = self.request
+    #     user = request.user
+    #     if not user.is_authenticated:
+    #         return Product.objects.none() 
+    #     # print (request.user)
+    #     return qs.filter(user = request.user)
+    
+    
+    
 Product_List_create = ProductListCreateAPIView.as_view() # This is the same as the above class-based view, but it's a function-based view.
     
 # detail view
